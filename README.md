@@ -2,7 +2,7 @@
 # Asignación: [Funciones de alto orden]
 
 **Fecha:** [06/10/2025]
-**Curso:** [Programación funcional y concurrente]
+**Curso:** Programación funcional y concurrente
 
 ---
 
