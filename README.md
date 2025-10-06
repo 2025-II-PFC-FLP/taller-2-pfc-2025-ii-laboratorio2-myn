@@ -1,7 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/lEw1Qm1j)
-# Asignación: [Funciones de alto orden]
+# Asignación: Funciones de alto orden
 
-**Fecha:** [06/10/2025]
+**Fecha:** 06/10/2025
 **Curso:** Programación funcional y concurrente
 
 ---
@@ -10,7 +10,7 @@
 
 | Nombre Completo                       | Código    | Rol            | Correo Electrónico                    |
 | ------------------------------------- | --------- | -------------- | ------------------------------------- |
-| [Mariana de loa Ángeles Viera Serna]  | 202569104 | [Colaboradora] | [mariana.viera@correounivalle.edu.co] |
+|  Mariana de loa Ángeles Viera Serna   | 202569104 | Colaboradora   | mariana.viera@correounivalle.edu.co   |
 | [Estudiante 2]                        | 123457    | [Colaboradora] | [correo2@institucion.edu]             |
 
 ---
