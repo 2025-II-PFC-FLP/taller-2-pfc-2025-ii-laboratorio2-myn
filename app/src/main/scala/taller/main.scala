@@ -49,5 +49,4 @@ object Main extends App {
     val valorInter = interseccionConjuntos(x)
     println(s"x = $x → interseccion(grande1, grande2) = $valorInter")
   }
-
 }
