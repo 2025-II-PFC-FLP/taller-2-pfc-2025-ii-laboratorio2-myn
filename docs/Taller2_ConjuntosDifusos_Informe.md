@@ -1,7 +1,7 @@
 # Taller 2: Funciones de alto orden
 ## Fundamentos de Programación funcional y concurrente
 
-**Estudiante(s):** Mariana de los Ángeles Viera Serna - (escribe tu nombre aquí nata)
+**Estudiante(s):** Mariana de los Ángeles Viera Serna - Náthalie Wilches
 
 **Correo(s):** mariana.viera@correounivalle.edu.co - nathalie.wilches@correounivalle.edu.co
 
