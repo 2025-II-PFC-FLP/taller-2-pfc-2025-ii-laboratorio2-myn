@@ -1,191 +1,132 @@
-# Ejemplo informe de corrección
+# Informe de corrección
+**Fundamentos de Programación Funcional y Concurrente**
+Documento realizado por las estudiantes:
+*  **Mariana de los Ángeles Viera
+*  **Náthalie Wilches
 
-**Fundamentos de Programación Funcional y Concurrente**  
-Documento realizado por el docente Juan Francisco Díaz.
-
----
+--------------------------------------------------------------------------------
 
 ## Argumentación de corrección de programas
+La corrección de un programa $P_f$ se argumenta demostrando que siempre devuelve
+el resultado esperado $f(a)$ de acuerdo con su especificación. Es decir, se debe
+demostrar el siguiente teorema:
 
-### Argumentando sobre corrección de programas recursivos
+$$ \forall a \in A : P_f(a) == f(a) $$
 
-Sea $f : A \to B$ una función, y $A$ un conjunto definido recursivamente (recordar definición de matemáticas discretas I), como por ejemplo los naturales o las listas.
+Para las funciones de alto orden (HOF) que definen conjuntos difusos (1.2.1 y 1.2.2,
+la corrección se basa en la validación de la fórmula matemática y el rango de
+pertenencia. Para las funciones relacionales que usan recursión de cola (1.2.3), la
+corrección se demuestra mediante el formalismo de los invariantes de iteración.
+--------------------------------------------------------------------------------
 
-Sea $P_f$ un programa recursivo (lineal o en árbol) desarrollado en Scala (o en cualquier lenguaje de programación) hecho para calcular $f$:
+### 1.2.1. Conjunto Difuso de Números Grandes (`grande`)
 
-```scala
-def Pf(a: A): B = { // Pf recibe a de tipo A, y devuelve f(a) de tipo B
-  ...
-}
-```
-
-¿Cómo argumentar que \$P_f(a)\$ siempre devuelve \$f(a)\$ como respuesta? Es decir, ¿cómo argumentar que \$P_f\$ es correcto con respecto a su especificación?
-
-La respuesta es sencilla, demostrando el siguiente teorema:
-
-$$
-\forall a \in A : P_f(a) == f(a)
-$$
-
-Cuando uno tiene que demostrar que algo se cumple para todos los elementos de un conjunto definido recursivamente, es natural usar **inducción estructural**.
-
-En términos prácticos, esto significa demostrar que:
-
-- Para cada valor básico \$a\$ de \$A\$, se tiene que \$P_f(a) == f(a)\$.
-- Para cada valor \$a \in A\$ construido recursivamente a partir de otro(s) valor(es) \$a' \in A\$, se tiene que \$P_f(a') == f(a') \rightarrow P_f(a) == f(a)\$ (hipótesis de inducción).
-
----
-
-#### Ejemplo: Factorial Recursivo
-
-Sea \$f : \mathbb{N} \to \mathbb{N}\$ la función que calcula el factorial de un número natural, \$f(n) = n!\$.
+**Especificación ($f_{grande}$):**
+La función $f_{grande}(x; d, e)$ define el grado de pertenencia.
+$$ f_{grande}(x) = \left(\frac{x}{x + d}\right)^e $$
+donde $d \ge 1$ y $e > 1$.
 
 Programa en Scala:
-
 ```scala
-def Pf(n: Int): Int = {
-  if (n == 0) 1 else n * Pf(n - 1)
+def grande(d: Int, e: Int): Int => Double = {
+  x => math.pow(x.toDouble / (x + d).toDouble, e.toDouble)
 }
 ```
+**Teorema a demostrar:**
+$$ \forall x \in \mathbb{N}, d \in \mathbb{N}^+, e \in \mathbb{N} \land e>1: 0.0 \le P_{grande}(x) \le 1.0 $$
 
-Queremos demostrar que:
+*   **Argumentación de Corrección (Criterios 1 y 2):**
+    1.  **Análisis de la base de la potencia:** $\left(\frac{x}{x + d}\right)$
+        *   Como $x \ge 0$ y $d \ge 1$, la base siempre cumple: $$ 0 \le \frac{x}{x + d} < 1 $$
+    2.  **Análisis del exponente:** $()^e$. Dado que la base está entre 0 y 1, elevarla a una potencia positiva $e > 1$ mantiene el resultado dentro del mismo intervalo.
 
-$$
-\forall n \in \mathbb{N} : P_f(n) == n!
-$$
+**Conclusión:**
+$$ P_{grande}(x) \in [0.0, 1.0] \implies P_{grande} \text{ es correcta con respecto a la especificación de grado de pertenencia.}$$
 
-- **Caso base**: \$n = 0\$
+### 1.2.2. Complemento, Unión e Intersección
 
-$$
-P_f(0) \to 1 \quad \land \quad f(0) = 0! = 1
-$$
+La corrección se basa en la equivalencia directa entre el código y la definición formal.
 
-Entonces \$P_f(0) == f(0)\$.
-
-- **Caso inductivo**: \$n = k+1\$, \$k \geq 0\$.
-
-$$
-P_f(k+1) \to (k+1) \cdot P_f(k)
-$$
-
-Usando la hipótesis de inducción:
-
-$$
-\to (k+1) \cdot k! = (k+1)!
-$$
-
-Por lo tanto, \$P_f(k+1) == f(k+1)\$.
-
-**Conclusión**: \$\forall n \in \mathbb{N} : P_f(n) == n!\$
-
----
-
-#### Ejemplo: El máximo de una lista
-
-Sea \$f : \text{List}\[\mathbb{N}] \to \mathbb{N}\$ la función que calcula el máximo de una lista no vacía.
-
-Programa en Scala:
-
+*   **A. Complemento (`complemento`):**
+    *   **Especificación:** $f_{\neg S}(x) = 1 - f_{S}(x)$.
+    *   **Programa en Scala:**
 ```scala
-def maxLin(l: List[Int]): Int = {
-  if (l.tail.isEmpty) l.head
-  else math.max(maxLin(l.tail), l.head)
+def complemento(c: Int => Double): Int => Double = {
+  x => 1.0 - c(x)
 }
 ```
+    *   **Corrección:** La implementación es una traducción directa de la especificación:
+$$ P_{complemento}(c)(x) \equiv 1 - c(x) \equiv f_{\neg S}(x) $$
 
-Queremos demostrar que:
-
-$$
-\forall n \in \mathbb{N} \setminus \{0\} :
-P_f(\text{List}(a_1, \ldots, a_n)) == f(\text{List}(a_1, \ldots, a_n))
-$$
-
-- **Caso base**: \$n=1\$.
-
-$$
-P_f(\text{List}(a_1)) \to a_1 \quad \land \quad f(\text{List}(a_1)) = a_1
-$$
-
-- **Caso inductivo**: \$n=k+1\$.
-
-$$
-P_f(L) \to \text{math.max}(P_f(\text{List}(a_2, \ldots, a_{k+1})), a_1)
-$$
-
-Dependiendo del mayor entre \$a_1\$ y \$b\$ (el máximo del resto de la lista), se cumple que \$P_f(L) == f(L)\$.
-
-**Conclusión**:
-
-$$
-\forall n \in \mathbb{N} \setminus \{0\} : P_f(\text{List}(a_1, \ldots, a_n)) == f(\text{List}(a_1, \ldots, a_n))
-$$
-
----
-
-### Argumentando sobre corrección de programas iterativos
-
-Para argumentar la corrección de programas iterativos, se debe formalizar cómo es la iteración:
-
-- Representación de un estado \$s\$.
-- Estado inicial \$s_0\$.
-- Estado final \$s_f\$.
-- Invariante de la iteración \$\text{Inv}(s)\$.
-- Transformación de estados \$\text{transformar}(s)\$.
-
-Programa iterativo genérico:
-
+*   **B. Unión (`union`):**
+    *   **Especificación:** $f_{S_1 \cup S_2} = \max(f_{S_1}, f_{S_2})$.
+    *   **Programa en Scala:**
 ```scala
-def Pf(a: A): B = {
-  def Pf_iter(s: Estado): B =
-    if (esFinal(s)) respuesta(s) else Pf_iter(transformar(s))
-  Pf_iter(s0)
+def union(cd1: Int => Double, cd2: Int => Double): Int => Double = {
+  x => math.max(cd1(x), cd2(x))
 }
 ```
+    *   **Corrección:** La función `math.max` implementa directamente la operación de la especificación.
 
----
-
-#### Ejemplo: Factorial Iterativo
-
+*   **C. Intersección (`interseccion`):**
+    *   **Especificación:** $f_{S_1 \cap S_2} = \min(f_{S_1}, f_{S_2})$.
+    *   **Programa en Scala:**
 ```scala
-def Pf(n: Int): Int = {
-  def Pf_iter(i: Int, n: Int, ac: Int): Int =
-    if (i > n) ac else Pf_iter(i + 1, n, i * ac)
-  Pf_iter(1, n, 1)
+def interseccion(cd1: Int => Double, cd2: Int => Double): Int => Double = {
+  x => math.min(cd1(x), cd2(x))
 }
 ```
+    *   **Corrección:** La función `math.min` implementa directamente la operación de la especificación.
 
-- Estado \$s = (i, n, ac)\$
-- Estado inicial \$s_0 = (1, n, 1)\$
-- Estado final: \$i = n+1\$
-- Invariante: \$\text{Inv}(i,n,ac) \equiv i \leq n+1 \land ac = (i-1)!\$
-- Transformación: \$(i, n, ac) \to (i+1, n, i \cdot ac)\$
+--------------------------------------------------------------------------------
 
-Por inducción sobre la iteración, se demuestra que al llegar a \$s_f\$, \$ac = n!\$.
+### 1.2.3. Inclusión e Igualdad (Recursión de Cola)
 
----
+#### Argumentando sobre corrección de programas iterativos
+Para argumentar la corrección de programas implementados con recursión de cola, se debe formalizar la iteración mediante invariantes.
 
-#### Ejemplo: El máximo de una lista
-
+##### A. Inclusión (`inclusion`)
+*   **Especificación ($f_{inclusion}$):** $S_1 \subseteq S_2$ si y solo si $\forall x \in U: f_{S_1}(x) \le f_{S_2}(x)$.
+*   **Programa en Scala (Recursión de Cola):**
 ```scala
-def maxIt(l: List[Int]): Int = {
-  def maxAux(max: Int, l: List[Int]): Int = {
-    if (l.isEmpty) max
-    else maxAux(math.max(max, l.head), l.tail)
+def inclusion(cd1: ConjDifuso, cd2: ConjDifuso): Boolean = {
+  @scala.annotation.tailrec
+  def check_inclusion(i: Int): Boolean = {
+    if (i > 1000) {
+      true
+    } else if (cd1(i) <= cd2(i)) {
+      check_inclusion(i + 1)
+    } else {
+      false
+    }
   }
-  maxAux(l.head, l.tail)
+  check_inclusion(0)
 }
 ```
+**Argumentación de Corrección (Invariantes de Iteración) (Criterios 1 y 2):**
+1.  **Estado $s$**: Índice de verificación $i$. $$ s = (i) $$
+2.  **Estado inicial $s_0$**: $i=0$. $$ s_0 = (0) $$
+3.  **Estado final $s_f$**: Cuando $i$ supera el límite superior de búsqueda (1000). $$ s_f = (1001) $$
+4.  **Invariante de la iteración $\text{Inv}(s)$**: La inclusión se ha mantenido cierta para todos los números revisados $k \in [0, i-1]$.
+    $$ \text{Inv}(i) \equiv \forall k \in [0, i-1] : f_{S_1}(k) \le f_{S_2}(k) $$
+5.  **Transformación de estados $\text{transformar}(s)$**:
+    $$ \text{transformar}(i) \to (i+1) \quad \text{si } f_{S_1}(i) \le f_{S_2}(i) $$
+    Si la condición falla, la función termina inmediatamente devolviendo $false$.
 
-- Estado \$s = (max, l)\$
-- Estado inicial \$s_0 = (a_1, \text{List}(a_2, \ldots, a_k))\$
-- Estado final: \$l = \text{List}()\$
-- Invariante: \$\text{Inv}(max, l) \equiv max = f(\text{prefijo})\$
-- Transformación: \$(max, l) \to (\text{math.max}(max, l.head), l.tail)\$
+**Explicación de los llamados en la ejecución (Criterio 3):**
+La función `check_inclusion` utiliza **recursión de cola** (`@scala.annotation.tailrec`). La llamada recursiva es la **última instrucción** en la función, lo que permite al compilador transformar el proceso en un **bucle optimizado**. Esto implica que **no se acumulan marcos de llamada en la pila de ejecución**, sino que el estado $i$ se actualiza en cada iteración, garantizando la eficiencia y validando la corrección por invariantes.
 
-Por inducción, al llegar al estado final, \$max = f(L)\$.
+---
 
-**Conclusión**:
+##### B. Igualdad (`igualdad`)
+*   **Especificación ($f_{igualdad}$):** Dos conjuntos son iguales si hay inclusión mutua.
+    $$ S_1 = S_2 \iff (S_1 \subseteq S_2 \land S_2 \subseteq S_1) $$
+*   **Programa en Scala:**
 
-$$
-P_f(L) == f(L)
-$$
+```scala
+def igualdad(cd1: ConjDifuso, cd2: ConjDifuso): Boolean = {
+  inclusion(cd1, cd2) && inclusion(cd2, cd1)
+}
+```
+*   **Corrección:** $P_{igualdad}$ es correcto por definición, basándose en la doble aplicación de $P_{inclusion}$, cuya corrección ha sido formalmente demostrada.
+```
