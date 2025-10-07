@@ -11,7 +11,7 @@
 | Nombre Completo                       | Código    | Rol            | Correo Electrónico                    |
 | ------------------------------------- | --------- | -------------- | ------------------------------------- |
 |  Mariana de loa Ángeles Viera Serna   | 202569104 | Colaboradora   | mariana.viera@correounivalle.edu.co   |
-| [Estudiante 2]                        | 123457    | [Colaboradora] | [correo2@institucion.edu]             |
+|  Náthalie Wilches Tamayo              | 202569482 | Colaboradora   | nathalie.wilches@correounivalle.edu.co|
 
 ---
 
